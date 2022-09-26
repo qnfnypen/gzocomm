@@ -1,4 +1,4 @@
-module gzocomm
+module github.com/qnfnypen/gzocomm
 
 go 1.17
 
