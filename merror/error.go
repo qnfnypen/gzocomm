@@ -7,6 +7,6 @@ type GzErr struct {
 }
 
 // Error 实现 error 接口
-func (gz *GzErr) Error() string {
+func (gz GzErr) Error() string {
 	return gz.RespErr
 }
