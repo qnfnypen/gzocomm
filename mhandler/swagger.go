@@ -9,6 +9,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/jinzhu/copier"
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/qnfnypen/gzocomm/mfile"
@@ -17,7 +18,8 @@ import (
 
 var doc string
 
-type swaggerInfo struct {
+// SwaggerInfo holds exported Swagger Info so clients can modify it
+type SwaggerInfo struct {
 	Version     string
 	Host        string
 	BasePath    string
@@ -26,8 +28,7 @@ type swaggerInfo struct {
 	Description string
 }
 
-// SwaggerInfo holds exported Swagger Info so clients can modify it
-var SwaggerInfo = swaggerInfo{
+var swaggerInfo = SwaggerInfo{
 	Version:     "",
 	Host:        "",
 	BasePath:    "",
@@ -39,7 +40,7 @@ var SwaggerInfo = swaggerInfo{
 type s struct{}
 
 func (s *s) ReadDoc() string {
-	sInfo := SwaggerInfo
+	sInfo := swaggerInfo
 	sInfo.Description = strings.Replace(sInfo.Description, "\n", "\\n", -1)
 
 	t, err := template.New("swagger_info").Funcs(template.FuncMap{
@@ -68,12 +69,16 @@ func (s *s) ReadDoc() string {
 }
 
 // SwaggerHandler swagger 处理器
-func SwaggerHandler(fp string) (http.HandlerFunc, error) {
+func SwaggerHandler(fp string, info *SwaggerInfo) (http.HandlerFunc, error) {
 	fp = mfile.InferPathDir(fp)
 
 	data, err := os.ReadFile(fp)
 	if err != nil {
 		return nil, fmt.Errorf("read swagger json file error:%w", err)
+	}
+	err = copier.Copy(&swaggerInfo, info)
+	if err != nil {
+		return nil, fmt.Errorf("copy swagger info error:%w", err)
 	}
 	doc = string(data)
 	swag.Register(swag.Name, &s{})
