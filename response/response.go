@@ -36,3 +36,28 @@ func ParamError(w http.ResponseWriter, err error) {
 
 	httpx.OkJson(w, body)
 }
+
+// UnauthorizedError 授权过期
+func UnauthorizedError(w http.ResponseWriter, errMsg string) {
+	var body Body
+
+	body.Code = 401
+	body.Msg = errMsg
+
+	httpx.OkJson(w, body)
+}
+
+// CodeResponse 指定
+func CodeResponse(w http.ResponseWriter, resp interface{}, code int, err error) {
+	var body Body
+
+	if err != nil {
+		body.Code = code
+		body.Msg = err.Error()
+	} else {
+		body.Msg = "OK"
+		body.Data = resp
+	}
+
+	httpx.OkJson(w, body)
+}
