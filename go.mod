@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/aws/aws-sdk-go v1.44.114
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/jinzhu/copier v0.3.5
 	github.com/rs/xid v1.4.0
 	github.com/swaggo/http-swagger v1.3.3
