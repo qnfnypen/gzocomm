@@ -23,6 +23,13 @@ type JwtMapToken struct {
 	key []byte
 }
 
+// NewJwtMapToken 新建 JwtMapToken
+func NewJwtMapToken(key []byte) *JwtMapToken {
+	return &JwtMapToken{
+		key: key,
+	}
+}
+
 // GenerateToken 根据内容生成 jwt token
 func (jmt *JwtMapToken) GenerateToken(payload jwt.MapClaims) (string, error) {
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
