@@ -3,6 +3,7 @@ package response
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
@@ -11,6 +12,7 @@ import (
 type Body struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`
+	Time string      `json:"time"`
 	Data interface{} `json:"data,omitempty"`
 }
 
@@ -24,6 +26,7 @@ func Response(w http.ResponseWriter, resp interface{}, err error) {
 		body.Msg = "OK"
 		body.Data = resp
 	}
+	body.Time = time.Now().Format("2006-01-02 15:04:05.000")
 	httpx.OkJson(w, body)
 }
 
@@ -34,6 +37,7 @@ func ParamError(w http.ResponseWriter, err error) {
 	body.Code = -1
 	body.Msg = fmt.Sprintf("param error:%v", err.Error())
 
+	body.Time = time.Now().Format("2006-01-02 15:04:05.000")
 	httpx.OkJson(w, body)
 }
 
@@ -44,6 +48,7 @@ func UnauthorizedError(w http.ResponseWriter, errMsg string) {
 	body.Code = 401
 	body.Msg = errMsg
 
+	body.Time = time.Now().Format("2006-01-02 15:04:05.000")
 	httpx.OkJson(w, body)
 }
 
@@ -59,5 +64,6 @@ func CodeResponse(w http.ResponseWriter, resp interface{}, code int, err error) 
 		body.Data = resp
 	}
 
+	body.Time = time.Now().Format("2006-01-02 15:04:05.000")
 	httpx.OkJson(w, body)
 }
