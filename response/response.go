@@ -41,7 +41,7 @@ func ParamError(w http.ResponseWriter, err error) {
 	httpx.OkJson(w, body)
 }
 
-// UnauthorizedError 授权过期
+// UnauthorizedError 授权过期，状态码为 200
 func UnauthorizedError(w http.ResponseWriter, errMsg string) {
 	var body Body
 
@@ -66,4 +66,16 @@ func CodeResponse(w http.ResponseWriter, resp interface{}, code int, err error) 
 
 	body.Time = time.Now().Format("2006-01-02 15:04:05.000")
 	httpx.OkJson(w, body)
+}
+
+// UnauthorizedResp 授权过期，状态码为 401
+func UnauthorizedResp(w http.ResponseWriter, errMsg string) {
+	var body Body
+
+	body.Code = -1
+	body.Msg = errMsg
+
+	body.Time = time.Now().Format("2006-01-02 15:04:05.000")
+
+	httpx.WriteJson(w, http.StatusUnauthorized, body)
 }
