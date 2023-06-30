@@ -69,7 +69,7 @@ func (s *s) ReadDoc() string {
 }
 
 // SwaggerHandler swagger 处理器
-func SwaggerHandler(fp string, info *SwaggerInfo) (http.HandlerFunc, error) {
+func SwaggerHandler(fp, url string, info *SwaggerInfo) (http.HandlerFunc, error) {
 	fp = mfile.InferPathDir(fp)
 
 	data, err := os.ReadFile(fp)
@@ -83,5 +83,6 @@ func SwaggerHandler(fp string, info *SwaggerInfo) (http.HandlerFunc, error) {
 	doc = string(data)
 	swag.Register(swag.Name, &s{})
 
-	return httpSwagger.Handler(httpSwagger.URL("/swagger/doc.json")), nil
+	url = "/" + strings.TrimSuffix(strings.TrimPrefix(url, "/"), "/") + "/doc.json"
+	return httpSwagger.Handler(httpSwagger.URL(url)), nil
 }
