@@ -9,3 +9,4 @@
   + 721: https://redocly.github.io/redoc/?url=https://tw-engine.culturevault.com/json#tag/Deploy/operation/deployNFTDrop
   + 1155: https://redocly.github.io/redoc/?url=https://tw-engine.culturevault.com/json#tag/Deploy/operation/deployEditionDrop
 3. 设置版税: https://redocly.github.io/redoc/?url=https://tw-engine.culturevault.com/json#tag/Contract-Royalties/operation/setDefaultRoyaltyInfo
+4. 设置掉落条件: https://redocly.github.io/redoc/?url=https://tw-engine.culturevault.com/json#tag/ERC721/operation/setClaimConditions
