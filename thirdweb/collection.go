@@ -192,7 +192,7 @@ func (c *Client) DeployEditionDrop(chain string, req *DeployEditionDropReq) (str
 	return baseResp.Result.DeployedAddress, nil
 }
 
-// SetRoyaltyDetail 设置合约版本
+// SetRoyaltyDetail 设置合约版税
 func (c *Client) SetRoyaltyDetail(chain, contractAddr string, req *SetRoyaltyDetailReq) error {
 	reqBody, err := json.Marshal(req)
 	if err != nil {
@@ -209,7 +209,7 @@ func (c *Client) SetRoyaltyDetail(chain, contractAddr string, req *SetRoyaltyDet
 	return nil
 }
 
-// OverwriteConditionsFor721 设置721合约的drop条件
+// OverwriteConditionsFor721 设置721合约的购买条件
 func (c *Client) OverwriteConditionsFor721(chain, contractAddr string, req *SetClaimCondtitionFor721Req) error {
 	reqBody, err := json.Marshal(req)
 	if err != nil {
@@ -226,7 +226,7 @@ func (c *Client) OverwriteConditionsFor721(chain, contractAddr string, req *SetC
 	return nil
 }
 
-// OverwriteConditionsFor1155 设置1155合约的drop条件
+// OverwriteConditionsFor1155 设置1155合约的购买条件
 func (c *Client) OverwriteConditionsFor1155(chain, contractAddr string, req *SetClaimCondtitionFor1155Req) error {
 	reqBody, err := json.Marshal(req)
 	if err != nil {

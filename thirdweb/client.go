@@ -16,6 +16,27 @@ type Client struct {
 	backedWallet string
 }
 
+// API thirdweb-api接口
+type API interface {
+	// chain
+	GetChainDetail(chain string) (*ChainDetailResp, error)
+	GetAllChainDetail() (*AllChainDetailResp, error)
+
+	// collection
+	DeploySplit(chain string, req *DeploySplitReq) (string, error)
+	DeployNFTDrop(chain string, req *DeployNFTDropReq) (string, error)
+	DeployEditionDrop(chain string, req *DeployEditionDropReq) (string, error)
+	SetRoyaltyDetail(chain, contractAddr string, req *SetRoyaltyDetailReq) error
+	OverwriteConditionsFor721(chain, contractAddr string, req *SetClaimCondtitionFor721Req) error
+	OverwriteConditionsFor1155(chain, contractAddr string, req *SetClaimCondtitionFor1155Req) error
+
+	// nft
+	BatchMint721(chain, contractAddr string, req *BatchMint721Req) error
+	BatchMint1155(chain, contractAddr string, req *BatchMint1155Req) error
+	LazyMint721(chain, contractAddr string, req *LazyMintReq) error
+	LazyMint1155(chain, contractAddr string, req *LazyMintReq) error
+}
+
 // NewClient 创建 thirdweb-api client
 func NewClient(burl, token, bwallet string) *Client {
 	return &Client{
@@ -34,7 +55,7 @@ func (c *Client) newRequest(method, url string, body io.Reader) ([]byte, error) 
 	if err != nil {
 		return nil, fmt.Errorf("new request error:%w", err)
 	}
-	req.Header.Set("Authorization", c.token)
+	req.Header.Set("Authorization", "bearer "+c.token)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("x-backend-wallet-address", c.backedWallet)
 
@@ -55,10 +76,14 @@ func (c *Client) newRequest(method, url string, body io.Reader) ([]byte, error) 
 
 	if resp.StatusCode != http.StatusOK {
 		if body, ok := respBody["error"]; ok {
-			if msg, ok := (body.(map[string]interface{}))["message"].(string); ok {
-				return nil, errors.New(msg)
+			if obj, ok := body.(map[string]interface{}); ok {
+				if msg, ok := obj["message"].(string); ok {
+					return nil, errors.New(msg)
+				}
 			}
 		}
+
+		return nil, fmt.Errorf("code:%d error:%s", resp.StatusCode, string(rb))
 	}
 
 	return rb, nil
