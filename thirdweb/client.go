@@ -29,6 +29,7 @@ type API interface {
 	SetRoyaltyDetail(chain, contractAddr string, req *SetRoyaltyDetailReq) error
 	OverwriteConditionsFor721(chain, contractAddr string, req *SetClaimCondtitionFor721Req) error
 	OverwriteConditionsFor1155(chain, contractAddr string, req *SetClaimCondtitionFor1155Req) error
+	ReadeFromContract(chain, contractAddr, funcName string, args ...string) (interface{}, error)
 
 	// nft
 	BatchMint721(chain, contractAddr string, req *BatchMint721Req) error

@@ -7,11 +7,15 @@ import (
 	"net/http"
 )
 
+const (
+	zeroAddr = "0x0000000000000000000000000000000000000000"
+)
+
 type (
 	// Recipient 接收者
 	Recipient struct {
 		Address   string `json:"address"`
-		SharesBps string `json:"sharesBps"`
+		SharesBps int64  `json:"sharesBps"`
 	}
 	// DeploySplitReq 创建分账合约请求
 	DeploySplitReq struct {
@@ -88,18 +92,19 @@ type (
 		MaxClaimablePerWallet interface{} `json:"maxClaimablePerWallet,omitempty"` // string or number
 		WaitInSeconds         interface{} `json:"waitInSeconds,omitempty"`         // string or number
 		MerkleRootHash        interface{} `json:"merkleRootHash,omitempty"`        // string or array of numbers
+		Snapshot              []Snapshot  `json:"snapshot,omitempty"`
 		Metadata              struct {
 			Name string `json:"name"`
 		} `json:"metadata"`
 	}
 	// SetClaimCondtitionFor721Req 设置721合约的drop条件
 	SetClaimCondtitionFor721Req struct {
-		ClaimConditionInputs ClaimCondition `json:"claimConditionInputs"`
+		ClaimConditionInputs []ClaimCondition `json:"claimConditionInputs"`
 	}
 	// SetClaimCondtitionFor1155Req 设置1155合约的drop条件
 	SetClaimCondtitionFor1155Req struct {
-		TokenID              interface{}    `json:"tokenId"` // string or number
-		ClaimConditionInputs ClaimCondition `json:"claimConditionInputs"`
+		TokenID              interface{}      `json:"tokenId"` // string or number
+		ClaimConditionInputs []ClaimCondition `json:"claimConditionInputs"`
 	}
 
 	// BaseContractResp 合约基础响应
@@ -108,6 +113,11 @@ type (
 			QueueID         string `json:"queueId"`
 			DeployedAddress string `json:"deployedAddress"`
 		} `json:"result"`
+	}
+
+	// GetFromContractResp 读取链响应
+	GetFromContractResp struct {
+		Result interface{} `json:"result"`
 	}
 )
 
@@ -145,6 +155,12 @@ func (c *Client) DeployNFTDrop(chain string, req *DeployNFTDropReq) (string, err
 	if req.Metadata.TrustedForwarders == nil {
 		req.Metadata.TrustedForwarders = make([]string, 0)
 	}
+	if req.Metadata.FeeRecipient == "" {
+		req.Metadata.FeeRecipient = zeroAddr
+	}
+	if req.Metadata.PlatformFeeRecipient == "" {
+		req.Metadata.PlatformFeeRecipient = zeroAddr
+	}
 	reqBody, err := json.Marshal(req)
 	if err != nil {
 		return "", fmt.Errorf("json marshal request of deploy nft-drop contract error:%w", err)
@@ -171,6 +187,12 @@ func (c *Client) DeployEditionDrop(chain string, req *DeployEditionDropReq) (str
 
 	if req.Metadata.TrustedForwarders == nil {
 		req.Metadata.TrustedForwarders = make([]string, 0)
+	}
+	if req.Metadata.FeeRecipient == "" {
+		req.Metadata.FeeRecipient = zeroAddr
+	}
+	if req.Metadata.PlatformFeeRecipient == "" {
+		req.Metadata.PlatformFeeRecipient = zeroAddr
 	}
 	reqBody, err := json.Marshal(req)
 	if err != nil {
@@ -241,4 +263,26 @@ func (c *Client) OverwriteConditionsFor1155(chain, contractAddr string, req *Set
 	}
 
 	return nil
+}
+
+// ReadeFromContract 从链上读取合约内容
+func (c *Client) ReadeFromContract(chain, contractAddr, funcName string, args ...string) (interface{}, error) {
+	resp := new(GetFromContractResp)
+
+	// https://cors.redoc.ly/contract/{chain}/{contractAddress}/read
+	url := fmt.Sprintf("%s/contract/%s/%s/read?functionName=%s", c.baseURL, chain, contractAddr, funcName)
+	if len(args) > 0 {
+		url = fmt.Sprintf("%s&args=%s", url, args[0])
+	}
+
+	body, err := c.newRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("get from contract functionName(%s) error:%w", funcName, err)
+	}
+	err = json.Unmarshal(body, resp)
+	if err != nil {
+		return nil, fmt.Errorf("json unmarshal response of get from contract functionName(%s) error:%w", funcName, err)
+	}
+
+	return resp.Result, nil
 }
