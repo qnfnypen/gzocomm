@@ -28,7 +28,9 @@ type API interface {
 	DeployEditionDrop(chain string, req *DeployEditionDropReq) (string, error)
 	SetRoyaltyDetail(chain, contractAddr string, req *SetRoyaltyDetailReq) error
 	OverwriteConditionsFor721(chain, contractAddr string, req *SetClaimCondtitionFor721Req) error
+	GetClaimsFor721(chain, contractAddr string) ([]ClaimCondition, error)
 	OverwriteConditionsFor1155(chain, contractAddr string, req *SetClaimCondtitionFor1155Req) error
+	GetClaimsFor1155(chain, contractAddr string) ([]ClaimCondition, error)
 	ReadeFromContract(chain, contractAddr, funcName string, args ...string) (interface{}, error)
 
 	// nft

@@ -119,6 +119,11 @@ type (
 	GetFromContractResp struct {
 		Result interface{} `json:"result"`
 	}
+
+	// GetClaimConditionsResp claims 响应
+	GetClaimConditionsResp struct {
+		Result []ClaimCondition `json:"result"`
+	}
 )
 
 // DeploySplit 部署分账合约，chain: id or name
@@ -282,6 +287,44 @@ func (c *Client) ReadeFromContract(chain, contractAddr, funcName string, args ..
 	err = json.Unmarshal(body, resp)
 	if err != nil {
 		return nil, fmt.Errorf("json unmarshal response of get from contract functionName(%s) error:%w", funcName, err)
+	}
+
+	return resp.Result, nil
+}
+
+// GetClaimsFor721 获取 721 的 claim 信息
+func (c *Client) GetClaimsFor721(chain, contractAddr string) ([]ClaimCondition, error) {
+	var resp GetClaimConditionsResp
+
+	// https://cors.redoc.ly/contract/{chain}/{contractAddress}/erc721/claim-conditions/get-all
+	url := fmt.Sprintf("%s/contract/%s/%s/erc721/claim-conditions/get-all", c.baseURL, chain, contractAddr)
+	body, err := c.newRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("get claim's info error")
+	}
+
+	err = json.Unmarshal(body, &resp)
+	if err != nil {
+		return nil, fmt.Errorf("json unmarshal error:%w", err)
+	}
+
+	return resp.Result, nil
+}
+
+// GetClaimsFor1155 获取 1155 的 claim 信息
+func (c *Client) GetClaimsFor1155(chain, contractAddr string) ([]ClaimCondition, error) {
+	var resp GetClaimConditionsResp
+
+	// https://cors.redoc.ly/contract/{chain}/{contractAddress}/erc1155/claim-conditions/get-all
+	url := fmt.Sprintf("%s/contract/%s/%s/erc1155/claim-conditions/get-all", c.baseURL, chain, contractAddr)
+	body, err := c.newRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("get claim's info error")
+	}
+
+	err = json.Unmarshal(body, &resp)
+	if err != nil {
+		return nil, fmt.Errorf("json unmarshal error:%w", err)
 	}
 
 	return resp.Result, nil
