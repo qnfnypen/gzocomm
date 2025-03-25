@@ -45,7 +45,7 @@ func (jmt *JwtMapToken) GenerateToken(payload jwt.MapClaims) (string, error) {
 func (jmt *JwtMapToken) ParseToken(token string) (map[string]interface{}, error) {
 	var mapClaims = make(map[string]interface{})
 
-	jwtToken, err := jwt.ParseWithClaims(token, &jwt.MapClaims{}, func(t *jwt.Token) (interface{}, error) {
+	jwtToken, err := jwt.ParseWithClaims(token, jwt.MapClaims{}, func(t *jwt.Token) (interface{}, error) {
 		return jmt.key, nil
 	})
 
