@@ -9,6 +9,7 @@ import (
 
 // GzErr 自定义错误
 type GzErr struct {
+	Code    int64
 	LogErr  string
 	RespErr string
 }
